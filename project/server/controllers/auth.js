@@ -1,6 +1,8 @@
 // server/controllers/auth.js
 import User from '../models/User.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import jwt from 'jsonwebtoken';
+
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {

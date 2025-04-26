@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, AtSign } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, User, AtSign, LogOut } from 'lucide-react';
+import authService from '../services/auth'; // Adjust path if needed
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<{ name: string } | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (authService.isAuthenticated()) {
+        const userData = await authService.getCurrentUser();
+        setUser(userData?.user || null);
+      } else {
+        setUser(null);
+      }
+    };
+
+    fetchUser();
+  }, [location.pathname]); // refetch user if route changes
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,10 +40,14 @@ const Navbar: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleLogout = () => {
+    authService.logout();
+    setUser(null);
+    navigate('/login');
+  };
+
   const navbarClasses = `fixed w-full z-50 transition-all duration-300 ${
-    isScrolled 
-      ? 'bg-white shadow-md py-2' 
-      : 'bg-transparent py-4'
+    isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
   }`;
 
   const linkClasses = `transition-all duration-300 hover:text-burgundy-600 ${
@@ -35,9 +55,7 @@ const Navbar: React.FC = () => {
   }`;
 
   const activeLinkClasses = `transition-all duration-300 ${
-    isScrolled 
-      ? 'text-burgundy-600 font-semibold' 
-      : 'text-white font-semibold underline underline-offset-4'
+    isScrolled ? 'text-burgundy-600 font-semibold' : 'text-white font-semibold underline underline-offset-4'
   }`;
 
   return (
@@ -65,15 +83,31 @@ const Navbar: React.FC = () => {
             >
               Courses
             </Link>
-            <Link 
-              to="/login" 
-              className="px-4 py-2 rounded-md bg-burgundy-600 text-white hover:bg-burgundy-700 transition-all"
-            >
-              <span className="flex items-center">
-                <User className="h-4 w-4 mr-2" />
-                Login
-              </span>
-            </Link>
+
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className={`${isScrolled ? 'text-gray-800' : 'text-white'}`}>
+                  {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center px-3 py-2 rounded-md bg-burgundy-600 text-white hover:bg-burgundy-700 transition-all"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link 
+                to="/login" 
+                className="px-4 py-2 rounded-md bg-burgundy-600 text-white hover:bg-burgundy-700 transition-all"
+              >
+                <span className="flex items-center">
+                  <User className="h-4 w-4 mr-2" />
+                  Login
+                </span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -108,13 +142,31 @@ const Navbar: React.FC = () => {
             >
               Courses
             </Link>
-            <Link
-              to="/login"
-              className="block px-4 py-2 mt-2 mx-4 text-center bg-burgundy-600 text-white rounded-md hover:bg-burgundy-700"
-              onClick={toggleMenu}
-            >
-              Login
-            </Link>
+
+            {user ? (
+              <>
+                <div className="block px-4 py-2 text-gray-800">
+                  {user.name}
+                </div>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    toggleMenu();
+                  }}
+                  className="block w-full text-left px-4 py-2 mt-2 mx-4 bg-burgundy-600 text-white rounded-md hover:bg-burgundy-700"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className="block px-4 py-2 mt-2 mx-4 text-center bg-burgundy-600 text-white rounded-md hover:bg-burgundy-700"
+                onClick={toggleMenu}
+              >
+                Login
+              </Link>
+            )}
           </div>
         )}
       </div>

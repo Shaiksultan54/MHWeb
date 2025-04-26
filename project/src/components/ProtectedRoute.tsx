@@ -8,29 +8,27 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const location = useLocation();
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    (async () => {
       try {
         const currentUser = await authService.getCurrentUser();
         setUser(currentUser);
       } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error('Error fetching user:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
-    };
-
-    checkAuth();
+    })();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-burgundy-600"></div>
+        <div className="h-12 w-12 border-t-2 border-b-2 border-burgundy-600 rounded-full animate-spin" />
       </div>
     );
   }
