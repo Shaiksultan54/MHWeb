@@ -1,33 +1,45 @@
+// server/models/Course.js
 import mongoose from 'mongoose';
 
 const courseSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: [true, 'Title is required'],
+    trim: true
   },
   description: {
     type: String,
-    required: true
+    required: [true, 'Description is required'],
+    trim: true
   },
   level: {
     type: String,
     enum: ['Beginner', 'Intermediate', 'Advanced'],
-    required: true
+    required: [true, 'Level is required']
   },
   price: {
     type: Number,
-    required: true
+    required: [true, 'Price is required'],
+    min: 0
   },
-  duration: String,
+  duration: {
+    type: String,
+    trim: true
+  },
   instructor: {
-    name: String,
+    name: {
+      type: String,
+      required: [true, 'Instructor name is required']
+    },
     avatar: String,
     bio: String
   },
   coverImage: String,
   rating: {
     type: Number,
-    default: 0
+    default: 0,
+    min: 0,
+    max: 5
   },
   totalStudents: {
     type: Number,
@@ -40,12 +52,8 @@ const courseSchema = new mongoose.Schema({
   lectures: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Lecture'
-  }],
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+  }]
+}, { timestamps: true });
 
 const Course = mongoose.model('Course', courseSchema);
 export default Course;

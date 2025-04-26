@@ -3,28 +3,28 @@ import mongoose from 'mongoose';
 const lectureSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true
+    required: [true, 'Title is required'],
+    trim: true
   },
-  description: String,
+  description: {
+    type: String,
+    trim: true
+  },
   videoUrl: {
     type: String,
-    required: true
+    required: [true, 'Video URL is required']
   },
   duration: String,
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
-    required: true
+    required: [true, 'Course ID is required']
   },
   order: {
     type: Number,
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
+    required: [true, 'Order is required']
   }
-});
+}, { timestamps: true });
 
 const Lecture = mongoose.model('Lecture', lectureSchema);
 export default Lecture;
