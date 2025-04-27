@@ -15,8 +15,8 @@ Welcome to **MHWeb**, a modern Learning Management System (LMS) platform designe
 - **Backend**: Node.js + Express.js
 - **Authentication**: JWT Tokens + Auth Service
 - **Database**: MongoDB Atlas
-- **Hosting**: (Add your hosting provider, e.g., Vercel, AWS, Render)
-- **Cloud Storage**: (Add cloud provider, e.g., AWS S3, Google Cloud)
+- **Hosting**: versal
+- **Cloud Storage**: Cloudinary 
 
 ## 📂 Project Structure
 ```bash
